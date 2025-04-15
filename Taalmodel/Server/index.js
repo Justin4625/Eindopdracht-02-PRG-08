@@ -14,10 +14,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
-
 app.post('/question', async (req, res) => {
     const question = req.body.question;
     const system = req.body.system;
