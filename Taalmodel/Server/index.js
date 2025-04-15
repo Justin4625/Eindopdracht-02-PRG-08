@@ -26,16 +26,18 @@ app.post('/question', async (req, res) => {
     });
 
     try {
-        const chat = await model.invoke(messages);
+        const stream = await model.stream(messages);
 
-        res.json({
-            answer: chat.content,
-        });
+        res.setHeader("Content-Type", "text/plain");
+
+        for await (const chunk of stream) {
+            res.write(chunk.content); // Send each chunk to the client
+        }
+
+        res.end(); // End the response when the stream is complete
     } catch (error) {
-        console.error('Error processing the question:', error);
-        res.status(500).json({
-            error: 'An error occurred while processing your request.',
-        });
+        console.error('Error during streaming:', error);
+        res.status(500).send('An error occurred while streaming the response.');
     }
 });
 

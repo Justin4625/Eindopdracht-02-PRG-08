@@ -12,6 +12,9 @@ function Home() {
         const newMessage = { role: "user", content: humanMessage };
         const updatedContext = [...context, newMessage];
 
+        // Clear the response state before starting
+        setResponse("");
+
         try {
             const res = await fetch('http://localhost:8000/question', {
                 method: 'POST',
@@ -24,10 +27,20 @@ function Home() {
                 }),
             });
 
-            const data = await res.json();
-            setResponse(data.answer);
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let result = "";
 
-            setContext([...updatedContext, { role: "assistant", content: data.answer }]);
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                result += chunk;
+                setResponse((prev) => prev + chunk); // Append the chunk to the response
+            }
+
+            setContext([...updatedContext, { role: "assistant", content: result }]);
         } catch (error) {
             console.error('Error:', error);
             setResponse('An error occurred while processing your request.');
