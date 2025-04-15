@@ -1,12 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import {AzureChatOpenAI} from "@langchain/openai";
-import {HumanMessage, SystemMessage} from "@langchain/core/messages";
+import { AzureChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
 
 const app = express();
 const port = 8000;
 
-const model = new AzureChatOpenAI({temperature: 0.5});
+const model = new AzureChatOpenAI({ temperature: 0.5 });
 
 app.use(cors());
 app.use(express.json());
@@ -21,7 +21,7 @@ app.post('/question', async (req, res) => {
         if (msg.role === "user") {
             messages.push(new HumanMessage(msg.content));
         } else if (msg.role === "assistant") {
-            messages.push(new SystemMessage(msg.content));
+            messages.push(new AIMessage(msg.content));
         }
     });
 
