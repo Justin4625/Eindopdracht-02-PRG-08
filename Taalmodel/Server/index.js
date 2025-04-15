@@ -8,22 +8,25 @@ const port = 8000;
 
 const model = new AzureChatOpenAI({temperature: 0.5});
 
-let messages = [];
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/question', async (req, res) => {
-    const question = req.body.question;
-    const system = req.body.system;
+    const { system, context } = req.body;
 
-    messages.push(new SystemMessage(system));
-    messages.push(new HumanMessage(question));
+    let messages = [new SystemMessage(system)];
+
+    context.forEach((msg) => {
+        if (msg.role === "user") {
+            messages.push(new HumanMessage(msg.content));
+        } else if (msg.role === "assistant") {
+            messages.push(new SystemMessage(msg.content));
+        }
+    });
 
     try {
         const chat = await model.invoke(messages);
-        messages.push(chat);
 
         res.json({
             answer: chat.content,

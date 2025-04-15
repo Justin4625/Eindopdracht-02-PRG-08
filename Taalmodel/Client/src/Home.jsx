@@ -4,9 +4,13 @@ function Home() {
     const [systemMessage, setSystemMessage] = useState("");
     const [humanMessage, setHumanMessage] = useState("");
     const [response, setResponse] = useState("");
+    const [context, setContext] = useState([]); // Houdt de context bij
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const newMessage = { role: "user", content: humanMessage };
+        const updatedContext = [...context, newMessage];
 
         try {
             const res = await fetch('http://localhost:8000/question', {
@@ -16,12 +20,14 @@ function Home() {
                 },
                 body: JSON.stringify({
                     system: systemMessage,
-                    question: humanMessage,
+                    context: updatedContext,
                 }),
             });
 
             const data = await res.json();
             setResponse(data.answer);
+
+            setContext([...updatedContext, { role: "assistant", content: data.answer }]);
         } catch (error) {
             console.error('Error:', error);
             setResponse('An error occurred while processing your request.');
