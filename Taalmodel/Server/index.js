@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
-import { AzureChatOpenAI } from "@langchain/openai";
+import {AzureChatOpenAI, AzureOpenAIEmbeddings} from "@langchain/openai";
 import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
+import {TextLoader} from "langchain/document_loaders/fs/text";
+import {RecursiveCharacterTextSplitter} from "langchain/text_splitter";
+import {FaissStore} from "@langchain/community/vectorstores/faiss";
 
 const app = express();
 const port = 8000;
@@ -12,18 +15,42 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+let vectorStore
+
+const embeddings = new AzureOpenAIEmbeddings({
+    temperature: 0,
+    azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_EMBEDDING_DEPLOYMENT_NAME
+});
+
+// const loader = new TextLoader("./public/example.txt");
+// const docs = await loader.load();
+// const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 100, chunkOverlap: 50 });
+// const splitDocs = await textSplitter.splitDocuments(docs);
+// console.log(`Document split into ${splitDocs.length} chunks. Now saving into vector store`);
+// vectorStore = await FaissStore.fromDocuments(splitDocs, embeddings);
+// await vectorStore.save("./vectordatabase"); // geef hier de naam van de directory waar je de data gaat opslaan
+
 app.post('/question', async (req, res) => {
-    const { system, context } = req.body;
+    vectorStore = await FaissStore.load("./vectordatabase", embeddings);
+    const relevantDocs = await vectorStore.similaritySearch("Get your data from this source", 5);
+    const context = relevantDocs.map(doc => doc.pageContent).join("\n");
+    const { system, contextMessage } = req.body;
 
-    let messages = [new SystemMessage(system)];
+    const systemMessage = `use information from the ${context} to answer the question`;
 
-    context.forEach((msg) => {
-        if (msg.role === "user") {
-            messages.push(new HumanMessage(msg.content));
-        } else if (msg.role === "assistant") {
-            messages.push(new AIMessage(msg.content));
-        }
-    });
+    let messages = [new SystemMessage(systemMessage)];
+
+    if (Array.isArray(contextMessage)) {
+        contextMessage.forEach((msg) => {
+            if (msg.role === "user") {
+                messages.push(new HumanMessage(msg.content));
+            } else if (msg.role === "assistant") {
+                messages.push(new AIMessage(msg.content));
+            }
+        });
+    } else {
+        return res.status(400).send('Invalid or missing contextMessage in request body.');
+    }
 
     try {
         const stream = await model.stream(messages);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function Home() {
-    const [systemMessage, setSystemMessage] = useState("");
+    // const [systemMessage, setSystemMessage] = useState("");
     const [humanMessage, setHumanMessage] = useState("");
     const [response, setResponse] = useState("");
     const [context, setContext] = useState([]); // Houdt de context bij
@@ -22,8 +22,8 @@ function Home() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    system: systemMessage,
-                    context: updatedContext,
+                    // system: systemMessage,
+                    contextMessage: updatedContext,
                 }),
             });
 
@@ -55,16 +55,16 @@ function Home() {
                 onSubmit={handleSubmit}
                 className="bg-black text-white p-6 rounded-lg shadow-lg max-w-lg mx-auto"
             >
-                <div className="mb-4">
-                    <label className="block text-yellow-400 mb-2">
-                        System Message:
-                    </label>
-                    <textarea
-                        value={systemMessage}
-                        onChange={(e) => setSystemMessage(e.target.value)}
-                        className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-                </div>
+                {/*<div className="mb-4">*/}
+                {/*    <label className="block text-yellow-400 mb-2">*/}
+                {/*        System Message:*/}
+                {/*    </label>*/}
+                {/*    <textarea*/}
+                {/*        value={systemMessage}*/}
+                {/*        onChange={(e) => setSystemMessage(e.target.value)}*/}
+                {/*        className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"*/}
+                {/*    />*/}
+                {/*</div>*/}
                 <div className="mb-4">
                     <label className="block text-yellow-400 mb-2">
                         Human Message:
