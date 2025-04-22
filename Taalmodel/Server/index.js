@@ -73,7 +73,7 @@ PRO TIPS:
 - For competitive questions, stick strictly to the STRATEGIES mentioned in the ${context} — DO NOT expand beyond that.
 
 FINAL REMINDER:
-You are ONLY allowed to use what’s in the ${context}. Your strength is in being PRECISE, RELIABLE, and FAITHFUL to the data provided. If the data doesn’t exist, SAY THAT — don’t make it up.
+You are ONLY allowed to use what’s in the ${context}. Your strength is in being PRECISE, RELIABLE, and FAITHFUL to the data provided. If the data doesn’t exist, SAY THAT — don’t make it up. Just say "I don't know" or "The data is not available in the ${context}."
 
 Good luck, Trainer.
 `;
