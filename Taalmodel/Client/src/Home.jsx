@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 function Home() {
-    // const [systemMessage, setSystemMessage] = useState("");
     const [humanMessage, setHumanMessage] = useState("");
     const [response, setResponse] = useState("");
     const [context, setContext] = useState([]); // Houdt de context bij
     const [loading, setLoading] = useState(false);
+    const [randomPokemon, setRandomPokemon] = useState(""); // Nieuwe state voor de opgehaalde Pokémon
 
     const handleSubmit = async (e) => {
         setLoading(true);
@@ -24,7 +24,6 @@ function Home() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    // system: systemMessage,
                     contextMessage: updatedContext,
                 }),
             });
@@ -50,24 +49,50 @@ function Home() {
         setLoading(false);
     };
 
+    const fetchRandomPokemon = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('http://localhost:8000/newpokemon', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+            setRandomPokemon(data.name); // Sla de naam van de opgehaalde Pokémon op
+            setContext((prev) => [...prev, { role: "assistant", content: data.name }]);
+        } catch (error) {
+            console.error('Error fetching Pokemon data:', error);
+            setRandomPokemon("Failed to fetch Pokémon data"); // Toon een foutmelding
+        }
+        setLoading(false);
+    };
+
     return (
         <div className="min-h-screen bg-white text-black font-bold p-8">
             <h1 className="text-4xl text-center mb-8">Temu Chat Bot</h1>
 
+            <button
+                onClick={fetchRandomPokemon}
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+                disabled={loading}
+            >
+                {loading ? "Loading..." : "Random Pokémon"}
+            </button>
+
+            {/* Toon de opgehaalde Pokémon */}
+            {randomPokemon && (
+                <div className="mt-4 text-center">
+                    <h2 className="text-2xl">Random Pokémon:</h2>
+                    <p className="text-lg">{randomPokemon}</p>
+                </div>
+            )}
+
             <form
                 onSubmit={handleSubmit}
-                className="bg-black text-white p-6 rounded-lg shadow-lg max-w-lg mx-auto"
+                className="bg-black text-white p-6 rounded-lg shadow-lg max-w-lg mx-auto mt-8"
             >
-                {/*<div className="mb-4">*/}
-                {/*    <label className="block text-yellow-400 mb-2">*/}
-                {/*        System Message:*/}
-                {/*    </label>*/}
-                {/*    <textarea*/}
-                {/*        value={systemMessage}*/}
-                {/*        onChange={(e) => setSystemMessage(e.target.value)}*/}
-                {/*        className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"*/}
-                {/*    />*/}
-                {/*</div>*/}
                 <div className="mb-4">
                     <label className="block text-yellow-400 mb-2">
                         Human Message:

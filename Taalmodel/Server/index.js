@@ -27,11 +27,17 @@ const embeddings = new AzureOpenAIEmbeddings({
 const fetchPokemonData = async () => {
     try {
         const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=9');
+        if (!response.ok) {
+            throw new Error(`API responded with status ${response.status}`);
+        }
         const data = await response.json();
-        currentPokemon = data[Math.floor(Math.random() * data.length)];
+        if (!data.results || data.results.length === 0) {
+            throw new Error('No Pokemon data found in API response');
+        }
+        currentPokemon = data.results[Math.floor(Math.random() * data.results.length)];
         return currentPokemon;
     } catch (error) {
-        console.error('Error fetching Pokemon data:', error);
+        console.error('Error in fetchPokemonData:', error.message);
         throw error;
     }
 };
