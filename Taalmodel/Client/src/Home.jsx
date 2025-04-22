@@ -5,8 +5,10 @@ function Home() {
     const [humanMessage, setHumanMessage] = useState("");
     const [response, setResponse] = useState("");
     const [context, setContext] = useState([]); // Houdt de context bij
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
+        setLoading(true);
         e.preventDefault();
 
         const newMessage = { role: "user", content: humanMessage };
@@ -45,6 +47,7 @@ function Home() {
             console.error('Error:', error);
             setResponse('An error occurred while processing your request.');
         }
+        setLoading(false);
     };
 
     return (
@@ -78,8 +81,9 @@ function Home() {
                 <button
                     type="submit"
                     className="w-full bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500 transition"
+                    disabled={loading}
                 >
-                    Submit
+                    {loading ? "Loading..." : "Submit"}
                 </button>
             </form>
 
