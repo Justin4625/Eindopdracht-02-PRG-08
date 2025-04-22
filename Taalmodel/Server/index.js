@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import {AzureChatOpenAI, AzureOpenAIEmbeddings} from "@langchain/openai";
-import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
+import {AIMessage, HumanMessage, SystemMessage} from "@langchain/core/messages";
+import {FaissStore} from "@langchain/community/vectorstores/faiss";
 import {TextLoader} from "langchain/document_loaders/fs/text";
 import {RecursiveCharacterTextSplitter} from "langchain/text_splitter";
-import {FaissStore} from "@langchain/community/vectorstores/faiss";
 
 const app = express();
 const port = 8000;
@@ -16,11 +16,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 let vectorStore
+let currentPokemon = null;
 
 const embeddings = new AzureOpenAIEmbeddings({
     temperature: 0,
     azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_EMBEDDING_DEPLOYMENT_NAME
 });
+
+
+const fetchPokemonData = async () => {
+    try {
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=9');
+        const data = await response.json();
+        currentPokemon = data[Math.floor(Math.random() * data.length)];
+        return currentPokemon;
+    } catch (error) {
+        console.error('Error fetching Pokemon data:', error);
+        throw error;
+    }
+};
 
 // const loader = new TextLoader("./public/example.txt");
 // const docs = await loader.load();
@@ -36,7 +50,28 @@ app.post('/question', async (req, res) => {
     const context = relevantDocs.map(doc => doc.pageContent).join("\n");
     const { system, contextMessage } = req.body;
 
-    const systemMessage = `use information from the ${context} to answer the question`;
+    const systemMessage = `
+YOU ARE A KNOWLEDGEABLE ${currentPokemon} ASSISTANT.
+
+Your task is to answer questions USING ONLY the information provided in the ${context}. DO NOT use any external data sources or general knowledge — the ${context} is your ONLY source of truth.
+
+DO NOT:
+- Pull in information from outside sources.
+- Refer to general knowledge, fan theories, or non-contextual trivia.
+- Add personal opinions (e.g., "Charizard is the coolest").
+- Invent or assume data not explicitly stated in the ${context}.
+
+PRO TIPS:
+- Use the JAPANESE NAME if requested — they are included in the ${context}.
+- When evolution is involved, COMPARE different stages using data from the ${context}.
+- For competitive questions, stick strictly to the STRATEGIES mentioned in the ${context} — DO NOT expand beyond that.
+
+FINAL REMINDER:
+You are ONLY allowed to use what’s in the ${context}. Your strength is in being PRECISE, RELIABLE, and FAITHFUL to the data provided. If the data doesn’t exist, SAY THAT — don’t make it up.
+
+Good luck, Trainer.
+`;
+
 
     let messages = [new SystemMessage(systemMessage)];
 
@@ -65,6 +100,20 @@ app.post('/question', async (req, res) => {
     } catch (error) {
         console.error('Error during streaming:', error);
         res.status(500).send('An error occurred while streaming the response.');
+    }
+});
+
+app.post('/newpokemon', async (req, res) => {
+    try {
+        const pokemon = await fetchPokemonData();
+        if (pokemon) {
+            res.status(200).json(pokemon);
+        } else {
+            res.status(500).json({ error: 'Failed to fetch Pokemon data' });
+        }
+    } catch (error) {
+        console.error('Error fetching Pokemon data:', error);
+        res.status(500).json({ error: 'Failed to fetch Pokemon data' });
     }
 });
 

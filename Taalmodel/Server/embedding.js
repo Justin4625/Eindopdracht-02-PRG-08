@@ -16,7 +16,7 @@ let vectorStore
 async function createVectorstore() {
     const loader = new TextLoader("./public/example.txt");
     const docs = await loader.load();
-    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 100, chunkOverlap: 50 });
+    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 200, chunkOverlap: 50 });
     const splitDocs = await textSplitter.splitDocuments(docs);
     console.log(`Document split into ${splitDocs.length} chunks. Now saving into vector store`);
     vectorStore = await FaissStore.fromDocuments(splitDocs, embeddings);
