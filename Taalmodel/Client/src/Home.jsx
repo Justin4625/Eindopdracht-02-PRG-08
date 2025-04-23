@@ -3,9 +3,9 @@ import { useState } from "react";
 function Home() {
     const [humanMessage, setHumanMessage] = useState("");
     const [response, setResponse] = useState("");
-    const [context, setContext] = useState([]); // Houdt de context bij
+    const [context, setContext] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [randomPokemon, setRandomPokemon] = useState(""); // Nieuwe state voor de opgehaalde Pokémon
+    const [randomPokemon, setRandomPokemon] = useState("");
 
     const handleSubmit = async (e) => {
         setLoading(true);
@@ -14,7 +14,6 @@ function Home() {
         const newMessage = { role: "user", content: humanMessage };
         const updatedContext = [...context, newMessage];
 
-        // Clear the response state before starting
         setResponse("");
 
         try {
@@ -38,7 +37,7 @@ function Home() {
 
                 const chunk = decoder.decode(value, { stream: true });
                 result += chunk;
-                setResponse((prev) => prev + chunk); // Append the chunk to the response
+                setResponse((prev) => prev + chunk);
             }
 
             setContext([...updatedContext, { role: "assistant", content: result }]);
@@ -60,52 +59,53 @@ function Home() {
             });
 
             const data = await res.json();
-            setRandomPokemon(data.name); // Sla de naam van de opgehaalde Pokémon op
+            setRandomPokemon(data.name);
             setContext((prev) => [...prev, { role: "assistant", content: data.name }]);
         } catch (error) {
             console.error('Error fetching Pokemon data:', error);
-            setRandomPokemon("Failed to fetch Pokémon data"); // Toon een foutmelding
+            setRandomPokemon("Failed to fetch Pokémon data");
         }
         setLoading(false);
     };
 
     return (
-        <div className="min-h-screen bg-white text-black font-bold p-8">
-            <h1 className="text-4xl text-center mb-8">Temu Chat Bot</h1>
+        <div className="min-h-screen bg-gradient-to-b from-red-500 to-red-700 text-white font-mono p-8">
+            <h1 className="text-4xl text-center mb-8 border-b-4 border-cyan-400 pb-2">
+                Pokédex Chat Bot
+            </h1>
 
             <button
                 onClick={fetchRandomPokemon}
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+                className="bg-gray-800 text-cyan-400 py-2 px-4 rounded-lg hover:bg-gray-700 transition shadow-lg"
                 disabled={loading}
             >
                 {loading ? "Loading..." : "Random Pokémon"}
             </button>
 
-            {/* Toon de opgehaalde Pokémon */}
             {randomPokemon && (
-                <div className="mt-4 text-center">
-                    <h2 className="text-2xl">Random Pokémon:</h2>
+                <div className="mt-4 text-center bg-gray-900 p-4 rounded-lg shadow-lg">
+                    <h2 className="text-2xl text-cyan-400">Random Pokémon:</h2>
                     <p className="text-lg">{randomPokemon}</p>
                 </div>
             )}
 
             <form
                 onSubmit={handleSubmit}
-                className="bg-black text-white p-6 rounded-lg shadow-lg max-w-lg mx-auto mt-8"
+                className="bg-gray-900 text-white p-6 rounded-lg shadow-lg max-w-lg mx-auto mt-8 border-2 border-cyan-400"
             >
                 <div className="mb-4">
-                    <label className="block text-yellow-400 mb-2">
+                    <label className="block text-cyan-400 mb-2">
                         Human Message:
                     </label>
                     <textarea
                         value={humanMessage}
                         onChange={(e) => setHumanMessage(e.target.value)}
-                        className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                        className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     />
                 </div>
                 <button
                     type="submit"
-                    className="w-full bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500 transition"
+                    className="w-full bg-cyan-400 text-black py-2 rounded-lg hover:bg-cyan-500 transition shadow-lg"
                     disabled={loading}
                 >
                     {loading ? "Loading..." : "Submit"}
@@ -113,8 +113,8 @@ function Home() {
             </form>
 
             {response && (
-                <div className="mt-8 bg-white text-black p-4 rounded-lg shadow-lg max-w-lg mx-auto">
-                    <h2 className="text-2xl mb-2">Response:</h2>
+                <div className="mt-8 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-w-lg mx-auto">
+                    <h2 className="text-2xl text-cyan-400 mb-2">Response:</h2>
                     <p>{response}</p>
                 </div>
             )}
