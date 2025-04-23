@@ -11,7 +11,7 @@ Dit is een taalmodel waarmee je vragen kunt stellen over een specifieke Pokémon
 
 ---
 
-## 🛠️ Installatie
+## Installatie
 
 1. **Clone de repository:**
 
@@ -30,3 +30,7 @@ npm install
 ```bash
 npm run dev
 ```
+## Eventuele fouten
+
+- Controleer of de backend draait en bereikbaar is op port 8000
+- Zorg ervoor dat je de juiste backend-URL gebruikt en dat CORS is ingeschakeld op de backend.
