@@ -48,7 +48,7 @@ const fetchPokemonData = async () => {
 // const splitDocs = await textSplitter.splitDocuments(docs);
 // console.log(`Document split into ${splitDocs.length} chunks. Now saving into vector store`);
 // vectorStore = await FaissStore.fromDocuments(splitDocs, embeddings);
-// await vectorStore.save("./vectordatabase"); // geef hier de naam van de directory waar je de data gaat opslaan
+// await vectorStore.save("./vectordatabase");
 
 app.post('/question', async (req, res) => {
     vectorStore = await FaissStore.load("./vectordatabase", embeddings);
@@ -99,10 +99,10 @@ Good luck, Trainer.
         res.setHeader("Content-Type", "text/plain");
 
         for await (const chunk of stream) {
-            res.write(chunk.content); // Send each chunk to the client
+            res.write(chunk.content);
         }
 
-        res.end(); // End the response when the stream is complete
+        res.end();
     } catch (error) {
         console.error('Error during streaming:', error);
         res.status(500).send('An error occurred while streaming the response.');
