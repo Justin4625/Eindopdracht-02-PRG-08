@@ -17,13 +17,16 @@ Dit is een taalmodel waarmee je vragen kunt stellen over een specifieke Pokémon
 
 ```bash
 git clone https://github.com/Justin4625/Taalmodel-Eindopdracht-02-PRG-08.git
+```
 
 2. **Installeer dependencies:**
 
 ```bash
 npm install
+```
 
 1. **Start de server:**
 
 ```bash
 npm run dev
+```
