@@ -1,22 +1,21 @@
-# 🧠 Taalmodel Server – Backend
+# 🧠 Taalmodel
 
-Dit is de backend voor het Taalmodel-project. Het biedt een API waarmee gebruikers vragen kunnen stellen op basis van een tekstuele context. Deze backend gebruikt **LangChain**, **Azure OpenAI**, en een **FAISS vectorstore** om intelligente en contextuele antwoorden te genereren. Er is ook een endpoint dat een willekeurige Pokémon ophaalt via de PokéAPI.
-
----
-
-## 🚀 Features
-
-- Stel vragen op basis van context opgeslagen in een vectorstore.
-- Vectorstore-opbouw uit `.txt`-bestanden via FAISS.
-- Real-time AI-antwoorden met behulp van Azure OpenAI (GPT-3.5 Turbo).
-- Haal willekeurige Pokémon op via de PokéAPI.
+Dit is een taalmodel waarmee je vragen kunt stellen over een specifieke Pokémon. Met de knop "Random Pokémon" kies je een willekeurige Pokémon, waarna je het model vragen kunt stellen over die Pokémon, zoals het type, evoluties of andere interessante weetjes.
 
 ---
 
-## 🛠️ Installation
+## 🚀 Mogelijkheden
+
+- Klik op "Random Pokémon om een Pokémon op te roepen uit de Poké API.
+- Stel vragen over de specifieke Pokémon.
+
+---
+
+## 🛠️ Installatie
 
 1. **Clone de repository:**
 
 ```bash
-git clone https://github.com/your-username/taalmodel-server.git
+git clone https://github.com/Justin4625/Taalmodel-Eindopdracht-02-PRG-08
+.git
 cd taalmodel-server
